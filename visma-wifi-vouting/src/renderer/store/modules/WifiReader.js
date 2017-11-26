@@ -1,6 +1,6 @@
 import WifiControl from 'wifi-control'
-import axios from 'axios'
 const childProcess = require('child_process')
+const $ = require('jquery')
 
 WifiControl.init({})
 const _apConnection = {
@@ -9,53 +9,75 @@ const _apConnection = {
 }
 const resultBaseUrl = 'http://192.168.69.96'
 
-WifiControl.win32Disconnect = (_apConnection) => {
+WifiControl.win32Disconnect = () => {
   try {
     childProcess.execSync(
-      `netsh #${_apConnection.ssid} disconnect`
+      `netsh wlan disconnect`
     )
   } catch (ex) {
     console.log(ex)
   }
 }
 
-const state = {
-  main: 0
-}
+const state = {}
 
 const mutations = {
 }
 
 const actions = {
   loadResultFromLolin (store, item) {
+    store.commit('Lesson/LOADING_RESULT', true, {root: true})
     WifiControl.connectToAP(_apConnection, (err, response) => {
       if (err) {
         console.log(err)
       } else {
-        setTimeout(() => {
-          axios.get(`${resultBaseUrl}/get_count`, {
-            headers: {
-              'Access-Control-Allow-Origin': '*',
-              'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
-              crossdomain: true
-            },
-            crossdomain: true,
-            proxy: {
-              host: '192.168.69.96'
-            }
-          }).then(response => {
-            alert(response.data)
-            item.results = JSON.parse(response.data)
-            store.dispatch('Lesson/setVotingResult', item)
-            WifiControl.win32Disconnect(_apConnection)
-          }).catch((error) => {
-            console.log('Im in WifiReader request get_count error')
-            console.log(error)
-          })
-        }, 2500)
+        wifiAjaxCallToGetData(store, item)
+      }
+    })
+  },
+  startVoting (store, item) {
+    store.commit('Lesson/LOADING_RESET', true, {root: true})
+    WifiControl.connectToAP(_apConnection, (err, response) => {
+      if (err) {
+        console.log(err)
+      } else {
+        wifiAjaxCallToReset(store, item)
       }
     })
   }
+}
+
+function wifiAjaxCallToGetData (store, item) {
+  $.ajax({
+    url: `${resultBaseUrl}/get_count`,
+    method: 'get',
+    crossDomain: true
+  }).then((data) => {
+    store.dispatch('Lesson/setVotingResult', {
+      id: item.id,
+      results: data
+    }, {root: true})
+    store.commit('Lesson/LOADING_RESULT', false, {root: true})
+    WifiControl.win32Disconnect()
+  }, () => {
+    setTimeout(wifiAjaxCallToGetData(store, item), 300)
+  })
+}
+
+function wifiAjaxCallToReset (store, item) {
+  $.ajax({
+    url: `${resultBaseUrl}/reset`,
+    method: 'get',
+    crossDomain: true
+  }).then((data) => {
+    store.dispatch('Lesson/startVoting', {
+      id: item.id
+    }, {root: true})
+    store.commit('Lesson/LOADING_RESET', false, {root: true})
+    WifiControl.win32Disconnect()
+  }, () => {
+    setTimeout(wifiAjaxCallToReset(store, item), 300)
+  })
 }
 
 export default {

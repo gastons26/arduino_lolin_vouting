@@ -19,6 +19,7 @@ class LessonModel {
       yellow: 0,
       red: 0
     }
+    this.closed = false
   }
 
   guid () {

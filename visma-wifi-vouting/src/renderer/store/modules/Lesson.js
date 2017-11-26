@@ -1,7 +1,9 @@
 import db from '../db'
 
 const state = {
-  items: []
+  items: [],
+  loadingResult: false,
+  loadingStart: false
 }
 
 const mutations = {
@@ -16,6 +18,31 @@ const mutations = {
       }
       return true
     })
+  },
+  SET_VOTING_RESULT (state, model) {
+    state.items.every((itm, index) => {
+      if (itm.id === model.id) {
+        state.items[index].results = model.results
+        return false
+      }
+      return true
+    })
+  },
+  START_VOTING (state, model) {
+    state.items.every((itm, index) => {
+      if (itm.id === model.id) {
+        state.items[index].isActive = true
+        state.loadingStart = false
+        return false
+      }
+      return true
+    })
+  },
+  LOADING_RESULT (state, isLoading) {
+    state.loadingResult = isLoading
+  },
+  LOADING_RESET (state, isLoading) {
+    state.loadingStart = isLoading
   }
 }
 
@@ -35,13 +62,24 @@ const actions = {
       store.commit('REMOVE_ITEM', itemId)
     })
   },
-  loadData ({commit}, mainEventId) {
-    db.lesson.where({mainEventId: mainEventId}).toArray((items) => {
+  loadData ({commit}, id) {
+    db.lesson.where('mainEventId').equals(id).toArray((items) => {
       commit('LOAD_ITEMS', items)
     })
   },
   setVotingResult (store, model) {
-    console.log(model)
+    db.lesson.update(model.id, {results: model.results}).then(function (updated) {
+      if (updated) {
+        store.commit('SET_VOTING_RESULT', model)
+      }
+    })
+  },
+  startVoting (store, model) {
+    db.lesson.update(model.id, {isActive: true}).then(function (updated) {
+      if (updated) {
+        store.commit('START_VOTING', model)
+      }
+    })
   }
 }
 

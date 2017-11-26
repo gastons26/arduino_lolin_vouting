@@ -3,10 +3,16 @@
     <b-table striped hover :fields="fields" :items="items">
 
       <template slot="operations" slot-scope="data">
-        <a v-on:click="startVoting(data.item)">
+        {{data.item.isActive}}
+        {{hasSomeStarted}}
+        <a v-if="!data.item.isActive && !hasSomeStarted" v-on:click="startVoting(data.item)"
+           v-bind:class="{ 'table-lesson_result--isloading': isVotingStartLoading }">
           <icon name="play"></icon>
         </a>
-        <a v-on:click="loadFromWifi(data.item)">
+        <a v-if="data.item.isActive" v-on:click="stopVoting(data.item)">
+          <icon name="stop"></icon>
+        </a>
+        <a v-if="data.item.isActive" v-on:click="loadFromWifi(data.item)" v-bind:class="{ 'table-lesson_result--isloading': isResultLoading }">
           <icon name="refresh"></icon>
         </a>
         <a v-on:click="createPdf(data.item)">
@@ -67,7 +73,13 @@
         this.$data.loading = true
       },
       loadFromWifi (item) {
-        this.$store.dispatch('WifiReader/loadResultFromLolin', item)
+        if (!this.$store.state.Lesson.loadingResult) {
+          this.$store.commit('Lesson/LOADING_RESULT', true)
+          this.$store.dispatch('WifiReader/loadResultFromLolin', item)
+        }
+      },
+      startVoting (item) {
+        this.$store.dispatch('WifiReader/startVoting', item)
       }
     },
     mounted () {
@@ -76,6 +88,17 @@
     computed: {
       items () {
         return this.$store.state.Lesson.items
+      },
+      isResultLoading () {
+        return this.$store.state.Lesson.loadingResult
+      },
+      isVotingStartLoading () {
+        return this.$store.state.Lesson.loadingResult
+      },
+      hasSomeStarted () {
+        return !(this.$store.state.Lesson.items.every(item => {
+          return !item.isAsctive
+        }))
       }
     }
   }
@@ -91,12 +114,20 @@
     font-weight: 600;
   }
   .table-lesson_result__green {
-      background-color: green;
-    }
+    background-color: green;
+  }
   .table-lesson_result__yellow {
-      background-color: gold;
-    }
+    background-color: gold;
+  }
   .table-lesson_result__red {
-      background-color: red;
-    }
+    background-color: red;
+  }
+  .table-lesson_result--isloading svg {
+    color: red;
+    animation: spinIt 1.5s infinite linear;
+  }
+  @keyframes spinIt {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(359deg); }
+  }
 </style>
