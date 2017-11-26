@@ -87,13 +87,13 @@ void resetButtons() {
 String GetResponse() {
     String response = String();
     
-    response = "{green: ";
+    response = "{\"green\": ";
     response += buttons[D5].counter;
     
-    response += ", yellow: ";
+    response += ",\"yellow\": ";
     response += buttons[D6].counter;
     
-    response += ", red: ";
+    response += ",\"red\": ";
     response += buttons[D7].counter;
     
     response += "}";
@@ -122,9 +122,9 @@ void processWifiRequest() {
   String request = client.readStringUntil('\r');
   client.flush(); 
 
-  client.println("HTTP/1.1 200 \r\n\ OK Allow-Control-Allow-Origin: *");
+  client.println("HTTP/1.1 200 OK");
+  client.println("Access-Control-Allow-Origin: *");
   client.println("Content-Type: application/json");
-  client.println("Accept: application/json");
  
   if (request.indexOf("/get_count") != -1)  {
     client.println("");
@@ -133,7 +133,7 @@ void processWifiRequest() {
   } else if(request.indexOf("/reset") != -1) {
     resetButtons();
     client.println("");
-    client.print("RESET");
+    client.print("{\"RESET\": true}");
   } else {
     client.println("");
     client.println(WiFi.softAPIP()); 
