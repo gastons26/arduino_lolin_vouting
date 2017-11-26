@@ -122,7 +122,7 @@ void processWifiRequest() {
   String request = client.readStringUntil('\r');
   client.flush(); 
 
-  client.println("HTTP/1.1 200 OK");
+  client.println("HTTP/1.1 200 \r\n\ OK Allow-Control-Allow-Origin: *");
   client.println("Content-Type: application/json");
   client.println("Accept: application/json");
  
