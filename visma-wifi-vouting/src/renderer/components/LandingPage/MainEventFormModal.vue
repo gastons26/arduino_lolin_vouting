@@ -30,10 +30,10 @@
     methods: {
       handleOk (evt) {
         this.$data.loading = true
-        evt.preventDefault()
         if (this.isValid()) {
-
+          this.$store.dispatch('MainEvent/addEvent', this.$data.form).then(() => {}, () => {})
         } else {
+          evt.preventDefault()
           alert('Nav aizpildīti visi dati')
         }
       },

@@ -11,7 +11,7 @@
 
         <!-- Right aligned nav items -->
         <b-navbar-nav class="ml-auto">
-          <b-nav-item v-b-modal="'eventModelModal'"><span class="glyphicon glyphicon-plus">+</span></b-nav-item>
+          <b-nav-item v-b-modal="'eventModelModal'"><icon name="plus" color="Teal"></icon></b-nav-item>
         </b-navbar-nav>
 
       </b-collapse>

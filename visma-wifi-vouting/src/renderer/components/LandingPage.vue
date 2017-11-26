@@ -2,7 +2,14 @@
 
   <div id="wrapper">
     <main>
-      <b-table striped hover :items="items"></b-table>
+      <b-table striped hover :fields="fields" :items="items">
+        <template slot="operations" slot-scope="data">
+          <icon name="eye"></icon>
+          <a v-on:click="deleteItem(data.item)">
+          <icon name="trash-o"></icon>
+          </a>
+        </template>
+      </b-table>
     </main>
 
     <main-event-form-modal id="eventModelModal"></main-event-form-modal>
@@ -13,6 +20,7 @@
 <script>
   import SystemInformation from './LandingPage/SystemInformation'
   import MainEventFormModal from './LandingPage/MainEventFormModal'
+  import moment from 'moment'
 
   export default {
     name: 'landing-page',
@@ -24,13 +32,33 @@
       return {
         loading: false,
         wifi: require('wifi-control'),
-        items: []
+        fields: {
+          title: {
+            label: 'Nosaukums',
+            sortable: true
+          },
+          description: {
+            label: 'Apraksts',
+            sortable: true
+          },
+          createdAt: {
+            label: 'Izveidots',
+            sortable: true,
+            formatter: (value) => { return moment(value).format('DD.MM.YYYY HH:mm') }
+          },
+          operations: {
+            label: 'Operācijas'
+          }
+        }
       }
     },
     mounted () {
-      this.$db.mainEvent.toArray(items => {
-        this.items = items
-      })
+      this.$store.dispatch('MainEvent/loadData')
+    },
+    computed: {
+      items () {
+        return this.$store.state.MainEvent.items
+      }
     },
     methods: {
       open (link) {
@@ -44,6 +72,11 @@
         this.$store.dispatch('MainEvent/loadData').then(() => {
           console.log(this.$store.state.MainEvent.items)
         })
+      },
+      deleteItem (item) {
+        if (confirm('Vai tiešām vēlaties dzēsst?')) {
+          this.$store.dispatch('MainEvent/removeItem', item.id)
+        }
       }
     }
   }

@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import BootstrapVue from 'bootstrap-vue'
+import 'vue-awesome/icons'
+import Icon from 'vue-awesome/components/Icon'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
@@ -12,6 +14,7 @@ if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.config.productionTip = false
 Vue.prototype.$db = db
 Vue.use(BootstrapVue)
+Vue.component('icon', Icon)
 
 /* eslint-disable no-new */
 new Vue({
