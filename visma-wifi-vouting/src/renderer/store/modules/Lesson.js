@@ -20,9 +20,10 @@ const mutations = {
 }
 
 const actions = {
-  addEvent (store, model) {
+  addLesson (store, model) {
     model.createdAt = Date.now()
-    db.mainEvent.put(model).then((id) => {
+    model.saltId = model.guid()
+    db.lesson.put(model).then((id) => {
       return store.dispatch('loadData')
     }, () => {
       throw Error('Cant mainEvent data')
@@ -35,7 +36,7 @@ const actions = {
     })
   },
   loadData ({commit}) {
-    db.mainEvent.toArray((items) => {
+    db.lesson.toArray((items) => {
       items.forEach(itm => {
         db.lesson.where({mainEventId: itm.id}).toArray(lessons => {
           itm.lessons = lessons

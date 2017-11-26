@@ -3,6 +3,9 @@
   <div id="wrapper">
     <main>
       <b-table striped hover :fields="fields" :items="items">
+        <template slot="title" slot-scope="data">
+          <router-link :to="{ name: 'lesson-list', params: { id: data.item.id }}">{{ data.item.title }}</router-link>
+        </template>
         <template slot="operations" slot-scope="data">
           <icon name="eye"></icon>
           <a v-on:click="deleteItem(data.item)">
@@ -11,9 +14,7 @@
         </template>
       </b-table>
     </main>
-
-    <main-event-form-modal id="eventModelModal"></main-event-form-modal>
-    <img id="logo" src="~@/assets/logo.png" alt="electron-vue">
+    <main-event-form-modal></main-event-form-modal>
   </div>
 </template>
 
@@ -61,18 +62,6 @@
       }
     },
     methods: {
-      open (link) {
-        this.$data.loading = true
-        this.$store.dispatch('MainEvent/addEvent').then(() => {
-
-        })
-        this.$store.dispatch('MainEvent/addLesson', 1)
-      },
-      logEvents () {
-        this.$store.dispatch('MainEvent/loadData').then(() => {
-          console.log(this.$store.state.MainEvent.items)
-        })
-      },
       deleteItem (item) {
         if (confirm('Vai tiešām vēlaties dzēsst?')) {
           this.$store.dispatch('MainEvent/removeItem', item.id)

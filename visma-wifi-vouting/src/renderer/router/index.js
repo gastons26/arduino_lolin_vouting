@@ -11,6 +11,11 @@ export default new Router({
       component: require('@/components/LandingPage').default
     },
     {
+      path: '/lesson-list/:id',
+      name: 'lesson-list',
+      component: require('@/components/LessonList').default
+    },
+    {
       path: '*',
       redirect: '/'
     }
