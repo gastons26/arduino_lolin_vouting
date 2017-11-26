@@ -80,9 +80,9 @@
   body { font-family: 'Source Sans Pro', sans-serif; }
 
   #wrapper {
-    height: 100vh;
+    height: 100%;
     padding: 0;
-    width: 100vw;
+    width: 100%;
   }
 
   #logo {

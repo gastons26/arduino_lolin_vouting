@@ -38,7 +38,6 @@
         }
       },
       isValid () {
-        console.log(this.$data.form)
         return (this.$data.form.title.trim().length > 0 && this.$data.form.description.trim().length > 0)
       }
     }

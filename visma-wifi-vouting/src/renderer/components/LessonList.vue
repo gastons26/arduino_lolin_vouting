@@ -3,13 +3,13 @@
     <b-table striped hover :fields="fields" :items="items">
 
       <template slot="operations" slot-scope="data">
-        {{data.item.isActive}}
-        {{hasSomeStarted}}
-        <a v-if="!data.item.isActive && !hasSomeStarted" v-on:click="startVoting(data.item)"
+        <a v-if="!data.item.isActive && !hasSomeStarted && !data.item.closed" v-on:click="startVoting(data.item)"
            v-bind:class="{ 'table-lesson_result--isloading': isVotingStartLoading }">
           <icon name="play"></icon>
         </a>
-        <a v-if="data.item.isActive" v-on:click="stopVoting(data.item)">
+
+        <a v-if="data.item.isActive" v-on:click="stopVoting(data.item)"
+           v-bind:class="{ 'table-lesson_result--isloading': isVotingStopLoading }">
           <icon name="stop"></icon>
         </a>
         <a v-if="data.item.isActive" v-on:click="loadFromWifi(data.item)" v-bind:class="{ 'table-lesson_result--isloading': isResultLoading }">
@@ -80,6 +80,9 @@
       },
       startVoting (item) {
         this.$store.dispatch('WifiReader/startVoting', item)
+      },
+      stopVoting (item) {
+        this.$store.dispatch('WifiReader/stopVoting', item)
       }
     },
     mounted () {
@@ -93,11 +96,14 @@
         return this.$store.state.Lesson.loadingResult
       },
       isVotingStartLoading () {
-        return this.$store.state.Lesson.loadingResult
+        return this.$store.state.Lesson.loadingStart
+      },
+      isVotingStopLoading () {
+        return this.$store.state.Lesson.loadingStop
       },
       hasSomeStarted () {
         return !(this.$store.state.Lesson.items.every(item => {
-          return !item.isAsctive
+          return !item.isActive
         }))
       }
     }

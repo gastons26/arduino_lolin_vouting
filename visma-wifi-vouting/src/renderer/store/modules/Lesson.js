@@ -3,7 +3,8 @@ import db from '../db'
 const state = {
   items: [],
   loadingResult: false,
-  loadingStart: false
+  loadingStart: false,
+  loadingStop: false
 }
 
 const mutations = {
@@ -38,11 +39,26 @@ const mutations = {
       return true
     })
   },
+  STOP_VOTING (state, model) {
+    state.items.every((itm, index) => {
+      if (itm.id === model.id) {
+        state.items[index].isActive = false
+        state.items[index].closed = true
+        state.items[index].results = model.results
+        state.loadingStart = false
+        return false
+      }
+      return true
+    })
+  },
   LOADING_RESULT (state, isLoading) {
     state.loadingResult = isLoading
   },
   LOADING_RESET (state, isLoading) {
     state.loadingStart = isLoading
+  },
+  LOADING_STOP (state, isLoading) {
+    state.loadingStop = isLoading
   }
 }
 
@@ -78,6 +94,13 @@ const actions = {
     db.lesson.update(model.id, {isActive: true}).then(function (updated) {
       if (updated) {
         store.commit('START_VOTING', model)
+      }
+    })
+  },
+  stopVoting (store, model) {
+    db.lesson.update(model.id, {isActive: false, closed: true, results: model.results}).then(function (updated) {
+      if (updated) {
+        store.commit('STOP_VOTING', model)
       }
     })
   }

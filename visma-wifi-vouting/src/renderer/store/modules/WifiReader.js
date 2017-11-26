@@ -44,23 +44,43 @@ const actions = {
         wifiAjaxCallToReset(store, item)
       }
     })
+  },
+  stopVoting (store, item) {
+    store.commit('Lesson/LOADING_STOP', true, {root: true})
+    WifiControl.connectToAP(_apConnection, (err, response) => {
+      if (err) {
+        console.log(err)
+      } else {
+        wifiAjaxCallToGetData(store, item, 'close')
+      }
+    })
   }
 }
 
-function wifiAjaxCallToGetData (store, item) {
+function wifiAjaxCallToGetData (store, item, operation = 'read') {
   $.ajax({
     url: `${resultBaseUrl}/get_count`,
     method: 'get',
     crossDomain: true
   }).then((data) => {
-    store.dispatch('Lesson/setVotingResult', {
-      id: item.id,
-      results: data
-    }, {root: true})
-    store.commit('Lesson/LOADING_RESULT', false, {root: true})
+    if (operation === 'close') {
+      store.dispatch('Lesson/stopVoting', {
+        id: item.id,
+        isActive: false,
+        closed: true,
+        results: data
+      }, {root: true})
+      store.commit('Lesson/LOADING_STOP', false, {root: true})
+    } else {
+      store.dispatch('Lesson/setVotingResult', {
+        id: item.id,
+        results: data
+      }, {root: true})
+      store.commit('Lesson/LOADING_RESULT', false, {root: true})
+    }
     WifiControl.win32Disconnect()
   }, () => {
-    setTimeout(wifiAjaxCallToGetData(store, item), 300)
+    setTimeout(wifiAjaxCallToGetData(store, item, operation), 300)
   })
 }
 
