@@ -5,13 +5,20 @@ class LessonModel {
   createdAt
   saltId
   mainEventId
-
+  isActive
+  results
   constructor (mainEventId, title, description) {
     this.mainEventId = mainEventId
     this.title = title
     this.description = description
     this.createdAt = Date.now()
     this.saltId = this.guid()
+    this.isActive = false
+    this.results = {
+      green: 0,
+      yellow: 0,
+      red: 0
+    }
   }
 
   guid () {

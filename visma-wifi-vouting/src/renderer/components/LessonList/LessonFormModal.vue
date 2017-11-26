@@ -24,14 +24,14 @@
     data () {
       return {
         loading: false,
-        form: new LessonModel('', '')
+        form: new LessonModel(this.$route.params.id, '', '')
       }
     },
     methods: {
       handleOk (evt) {
         this.$data.loading = true
         if (this.isValid()) {
-          this.$store.dispatch('MainEvent/addEvent', this.$data.form).then(() => {}, () => {})
+          this.$store.dispatch('Lesson/addLesson', this.$data.form).then(() => {}, () => {})
         } else {
           evt.preventDefault()
           alert('Nav aizpildīti visi dati')

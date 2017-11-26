@@ -1,5 +1,4 @@
 <template>
-
   <div id="wrapper">
     <main>
       <b-table striped hover :fields="fields" :items="items">
@@ -7,7 +6,6 @@
           <router-link :to="{ name: 'lesson-list', params: { id: data.item.id }}">{{ data.item.title }}</router-link>
         </template>
         <template slot="operations" slot-scope="data">
-          <icon name="eye"></icon>
           <a v-on:click="deleteItem(data.item)">
           <icon name="trash-o"></icon>
           </a>
@@ -32,7 +30,6 @@
     data () {
       return {
         loading: false,
-        wifi: require('wifi-control'),
         fields: {
           title: {
             label: 'Nosaukums',

@@ -24,7 +24,7 @@ const actions = {
     model.createdAt = Date.now()
     model.saltId = model.guid()
     db.lesson.put(model).then((id) => {
-      return store.dispatch('loadData')
+      return store.dispatch('loadData', model.mainEventId)
     }, () => {
       throw Error('Cant mainEvent data')
     })
@@ -35,15 +35,13 @@ const actions = {
       store.commit('REMOVE_ITEM', itemId)
     })
   },
-  loadData ({commit}) {
-    db.lesson.toArray((items) => {
-      items.forEach(itm => {
-        db.lesson.where({mainEventId: itm.id}).toArray(lessons => {
-          itm.lessons = lessons
-        })
-      })
+  loadData ({commit}, mainEventId) {
+    db.lesson.where({mainEventId: mainEventId}).toArray((items) => {
       commit('LOAD_ITEMS', items)
     })
+  },
+  setVotingResult (store, model) {
+    console.log(model)
   }
 }
 

@@ -63,6 +63,7 @@ function startRenderer () {
       compiler,
       {
         contentBase: path.join(__dirname, '../'),
+        headers: { 'Access-Control-Allow-Origin': '*' },
         quiet: true,
         before (app, ctx) {
           app.use(hotMiddleware)

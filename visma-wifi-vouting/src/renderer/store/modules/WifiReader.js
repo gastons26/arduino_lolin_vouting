@@ -27,16 +27,29 @@ const mutations = {
 }
 
 const actions = {
-  loadResultFromLolin ({ store }) {
+  loadResultFromLolin (store, item) {
     WifiControl.connectToAP(_apConnection, (err, response) => {
       if (err) {
         console.log(err)
       } else {
         setTimeout(() => {
-          axios.get(`${resultBaseUrl}/get_count`).then(response => {
-            store.dispatch('MainEvent/setVotingResult', response.data)
+          axios.get(`${resultBaseUrl}/get_count`, {
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
+              crossdomain: true
+            },
+            crossdomain: true,
+            proxy: {
+              host: '192.168.69.96'
+            }
+          }).then(response => {
+            alert(response.data)
+            item.results = JSON.parse(response.data)
+            store.dispatch('Lesson/setVotingResult', item)
             WifiControl.win32Disconnect(_apConnection)
           }).catch((error) => {
+            console.log('Im in WifiReader request get_count error')
             console.log(error)
           })
         }, 2500)
