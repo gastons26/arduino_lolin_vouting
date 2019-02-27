@@ -31,7 +31,9 @@
       handleOk (evt) {
         this.$data.loading = true
         if (this.isValid()) {
-          this.$store.dispatch('Lesson/addLesson', this.$data.form).then(() => {}, () => {})
+          this.$store.dispatch('Lesson/addLesson', this.$data.form).then(() => {
+            this.$data.form = new LessonModel(this.$route.params.id, '', '')
+          }, () => {})
         } else {
           evt.preventDefault()
           alert('Nav aizpildīti visi dati')

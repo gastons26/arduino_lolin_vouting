@@ -1,6 +1,6 @@
 {
   "name": "visma-wifi-vouting",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "author": "gastons26 <gatis.lapsins@gmail.com>",
   "description": "Read result form Lolin V3 arduino module",
   "license": null,
